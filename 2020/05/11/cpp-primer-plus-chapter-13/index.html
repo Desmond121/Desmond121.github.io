@@ -1,0 +1,665 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/icon.png">
+  <link rel="icon" href="/img/icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Desmond">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="类继承。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++ Primer Plus 第 13 章知识点">
+<meta property="og:url" content="https://desmond121.github.io/2020/05/11/cpp-primer-plus-chapter-13/">
+<meta property="og:site_name" content="Desmond&#39;s Blog">
+<meta property="og:description" content="类继承。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://desmond121.github.io/img/cpp_default.jpg">
+<meta property="article:published_time" content="2020-05-11T10:28:00.000Z">
+<meta property="article:modified_time" content="2022-07-31T00:06:56.225Z">
+<meta property="article:author" content="Desmond">
+<meta property="article:tag" content="C++">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://desmond121.github.io/img/cpp_default.jpg">
+  
+  
+  
+  <title>C++ Primer Plus 第 13 章知识点 - Desmond&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"desmond121.github.io","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Desmond&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="C++ Primer Plus 第 13 章知识点"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Desmond
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-05-11 11:28" pubdate>
+          2020年5月11日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          27 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">C++ Primer Plus 第 13 章知识点</h1>
+            
+              <p class="note note-info">
+                
+                  
+                    本文最后更新于：2022年7月31日 凌晨
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="派生一个类"><a href="#派生一个类" class="headerlink" title="派生一个类"></a>派生一个类</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">class</span> <span class="hljs-title class_">RatedPlayer</span> : <span class="hljs-keyword">public</span> TableTennisPlayer<br>&#123;<br><span class="hljs-keyword">private</span>:<br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> rating;<br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">RatedPlayer</span> (...);  <span class="hljs-comment">//constructor</span><br>    <span class="hljs-function"><span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> <span class="hljs-title">Rating</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> </span>&#123;<span class="hljs-keyword">return</span> rating;&#125; <span class="hljs-comment">//a derived class method</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>声明头表示 TableTennisPlayer 是一个公有基类，这个派生类是公有派生。TTP 基类的公有成员会成为 RP 派生类的公有成员。基类的私有部分也是派生类的一部分，但是要通过基类的公有函数来访问。</p>
+<p>派生类的构造函数需要给新成员和继承的成员都提供数据。如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c++">RatedPlayer::<span class="hljs-built_in">RatedPlayer</span> (<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> r, <span class="hljs-type">const</span> string&amp; fn, <span class="hljs-type">const</span> string&amp; ln, <span class="hljs-type">bool</span> ht) : <span class="hljs-built_in">TableTennisPlayer</span>(fn, ln, ht)<br>&#123;<br>    rating = r;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>可以看到基类的对象在进入构造函数之前被构造，如果不显式调用基类的构造函数，则会自动隐式调用默认的基类构造函数<code>TableTennisPlayer()</code></p>
+<h3 id="派生类和基类之间的特殊关系"><a href="#派生类和基类之间的特殊关系" class="headerlink" title="派生类和基类之间的特殊关系"></a>派生类和基类之间的特殊关系</h3><p>派生类可以使用基类的公有方法：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c++">RatedPlayer rp1;<br>rp1.<span class="hljs-built_in">Name</span>();  <span class="hljs-comment">//Name() is a method of TableTennisPlayer class.</span><br></code></pre></td></tr></table></figure>
+<p>基类指针可以在不进行显示类型转换的情况下指向派生类对象；基类引用可以在不进行显式类型转换的情况下引用派生类对象。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c++">RatedPlayer rp1;<br>TableTennisPlayer* p1 = rp1;<br>TableTennisPlayer&amp; p2 = rp1;<br>p1-&gt;<span class="hljs-built_in">Name</span>();<br>p2.<span class="hljs-built_in">Name</span>();<br></code></pre></td></tr></table></figure>
+<p>但是它们只能使用基类的方法，不能使用派生类的方法：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c++">p1-&gt;<span class="hljs-built_in">Rating</span>();  <span class="hljs-comment">//invalid!</span><br></code></pre></td></tr></table></figure>
+<h2 id="虚函数"><a href="#虚函数" class="headerlink" title="虚函数"></a>虚函数</h2><p>如果希望使用与基类不同的定义，则需要在派生类中声明和定义不同的函数版本。如果定义时没有使用<code>virtual</code>关键字，程序根据引用类型或者指针类型来选择方法。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c++">Brass dom;  <span class="hljs-comment">//base class</span><br>BrassPlus dot;  <span class="hljs-comment">//derived class</span><br>Brass&amp; b1 = dom;<br>Brass* b2 = dot;<br>b1.<span class="hljs-built_in">ViewAcct</span>();<br>b2-&gt;<span class="hljs-built_in">ViewAcct</span>();  <span class="hljs-comment">//both of them invoke Brass::ViewAcct()</span><br><span class="hljs-comment">//because b1 and b2 is Brass&amp;</span><br></code></pre></td></tr></table></figure>
+<p>如果使用<code>virtual</code>关键字：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">//....</span><br><span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">void</span> <span class="hljs-title">ViewAcct</span><span class="hljs-params">()</span></span>; <br><span class="hljs-comment">//....</span><br>Brass dom;  <span class="hljs-comment">//base class</span><br>BrassPlus dot;  <span class="hljs-comment">//derived class</span><br>Brass&amp; b1 = dom;<br>Brass* b2 = dot;<br>b1.<span class="hljs-built_in">ViewAcct</span>();  <span class="hljs-comment">//invoke Brass::ViewAcct()</span><br>b2-&gt;<span class="hljs-built_in">ViewAcct</span>();  <span class="hljs-comment">//invoke BrassPlus::ViewAcct()  </span><br></code></pre></td></tr></table></figure>
+<p><strong>注意：</strong> 记得在两个类中使用 virtual 声明析构虚函数。</p>
+<h3 id="一些经验"><a href="#一些经验" class="headerlink" title="一些经验"></a>一些经验</h3><p>首先，虚函数应该与原本的原型完全相同，如果返回类型是基类引用或者指针，则可以改变为指向派生类的引用或指针。</p>
+<p>其次，如果类声明被重载了，则应该在派生类中重新定义所有基类的版本。</p>
+<h2 id="“protected-”访问控制"><a href="#“protected-”访问控制" class="headerlink" title="“protected:”访问控制"></a>“protected:”访问控制</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Brass</span><br>&#123;<br><span class="hljs-keyword">protected</span>:<br>    <span class="hljs-type">double</span> balance;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>对于外部而言，<code>protected:</code>中的类成员是私有的，对于派生类来说，它是公共的。</p>
+<p>最好对类数据成员采用私有访问控制，不要使用保护访问控制；同时通过基类的方法使派生类间接访问数据。对于成员函数来说，保护访问很有用，能让派生类访问公众不能访问的内部函数。</p>
+<h2 id="抽象基类"><a href="#抽象基类" class="headerlink" title="抽象基类"></a>抽象基类</h2><p>有时两个累不具有“is-a”规则，也就是两者有共性，但又有不同之处，可以抽象出他们的共性，将这些共性放到一个抽象基类中（abstract base class, ABC），再派生出这两个类。</p>
+<p>在 ABC 中有一些方法，可能还没包含必要的数据成员来声明。C++通过使用纯虚函数提供未实现的函数。纯虚函数在开图使用<code>virtual</code>，并在末尾使用<code>= 0</code>。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">class</span> <span class="hljs-title class_">BaseEllipse</span><br>&#123;<br><span class="hljs-keyword">private</span>:<br><span class="hljs-comment">//...</span><br><span class="hljs-keyword">public</span>:<br><span class="hljs-comment">//...</span><br><span class="hljs-function"><span class="hljs-keyword">virtual</span> <span class="hljs-type">double</span> <span class="hljs-title">Area</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> </span>= <span class="hljs-number">0</span>;<span class="hljs-comment">// a pure virtual function</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>只要该类中包含了至少一个纯虚函数，则不能创建该类的对象。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c++">BaseEllipse a;<span class="hljs-comment">// invalid!!</span><br></code></pre></td></tr></table></figure>
+<p>纯虚函数可以有定义，也可以不定义。纯虚函数在派生类中必须有强制替代项，而普通虚函数可以没有。</p>
+<p>从 ABC 类派生出的类可以用 ABC 类的指针同时管理，这些类被称作具体类（concrete class）</p>
+<h2 id="继承和动态内存分配"><a href="#继承和动态内存分配" class="headerlink" title="继承和动态内存分配"></a>继承和动态内存分配</h2><h3 id="一、派生类不使用-new"><a href="#一、派生类不使用-new" class="headerlink" title="一、派生类不使用 new"></a>一、派生类不使用 new</h3><p>此时派生类不需要定义显式的析构函数、复制构造函数和赋值运算符。</p>
+<h3 id="二、派生类使用-new"><a href="#二、派生类使用-new" class="headerlink" title="二、派生类使用 new"></a>二、派生类使用 new</h3><p>首先，派生类析构函数会自动调用基类的析构函数，其自身只需要完成派生类构造函数的清理工作。</p>
+<p>其次，复制构造函数需要定义深复制，派生类只能访问基类的公有部分，因此还要在复制构造函数中调用基类的复制构造函数。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c++">baseDMA::<span class="hljs-built_in">baseDMA</span>(<span class="hljs-type">const</span> baseDMA&amp; rs)<br>&#123;<br>    <span class="hljs-comment">//...</span><br>&#125;<br><br>hasDMZ::<span class="hljs-built_in">hasDMA</span>(<span class="hljs-type">const</span> hasDMA&amp; rs) : <span class="hljs-built_in">baseDMA</span>(hs)<span class="hljs-comment">// 基类引用可以指向派生类，hs 不需要类型转换</span><br>&#123;<br>    <span class="hljs-comment">//...</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>最后，赋值运算符和上面类似。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c++">hasDMA&amp; hasDMA::<span class="hljs-keyword">operator</span>=(<span class="hljs-type">const</span> hasDMA&amp; hs)<br>&#123;<br>    <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span> == &amp;hs)<br>        <span class="hljs-keyword">return</span> *<span class="hljs-keyword">this</span>;<br>    baseDMZ::<span class="hljs-keyword">operator</span>=(hs);  <span class="hljs-comment">//copy the base portion</span><br>    <span class="hljs-keyword">delete</span>[] style;<br>    style = <span class="hljs-keyword">new</span> <span class="hljs-type">char</span>[std::<span class="hljs-built_in">strlen</span>(hs.style) + <span class="hljs-number">1</span>];<br>    std::<span class="hljs-built_in">strcpy</span>(style, hs.style);<br>    <span class="hljs-keyword">return</span> *<span class="hljs-keyword">this</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="友元的继承"><a href="#友元的继承" class="headerlink" title="友元的继承"></a>友元的继承</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">//基类声明</span><br><span class="hljs-keyword">friend</span> std::ostream&amp; <span class="hljs-keyword">operator</span>&lt;&lt;(std::ostream&amp; os, <span class="hljs-type">const</span> baseDMA&amp; rs);<br><span class="hljs-comment">//派生类声明</span><br><span class="hljs-keyword">friend</span> std::ostream&amp; <span class="hljs-keyword">operator</span>&lt;&lt;(std::ostream&amp; os, <span class="hljs-type">const</span> lacksDMA&amp; rs);<br><span class="hljs-comment">//基类定义</span><br>std::ostream&amp; <span class="hljs-keyword">operator</span>&lt;&lt;(std::ostream&amp; os, <span class="hljs-type">const</span> baseDMA&amp; rs)<br>&#123;<br>    os &lt;&lt; <span class="hljs-comment">//....</span><br>    <span class="hljs-keyword">return</span> os;<br>&#125;<br><span class="hljs-comment">//派生类定义</span><br>std::ostream&amp; <span class="hljs-keyword">operator</span>&lt;&lt;(std::ostream&amp; os, <span class="hljs-type">const</span> lacksDMA&amp; rs)<br>&#123;<br>    os &lt;&lt; (<span class="hljs-type">const</span> baseDMA&amp;) ls;<br>    os &lt;&lt; <span class="hljs-comment">//....</span><br>    <span class="hljs-keyword">return</span> os;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>派生类无法直接访问基类的数据，所以在其中先调用了基类的函数。另外，由于友元函数不是成员函数，无法通过解析作用域运算符来指定使用的函数，所以只能进行显式的转换。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/C/" class="category-chain-item">C++</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/C/">#C++</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>C++ Primer Plus 第 13 章知识点</div>
+      <div>https://desmond121.github.io/2020/05/11/cpp-primer-plus-chapter-13/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Desmond</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2020年5月11日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/06/12/traverse-interface-with-functor/" title="向量类遍历操作接口踩坑实录——函数对象">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">向量类遍历操作接口踩坑实录——函数对象</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/05/08/cpp-primer-plus-chapter-12/" title="C++ Primer Plus 第 12 章知识点">
+                        <span class="hidden-mobile">C++ Primer Plus 第 12 章知识点</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
