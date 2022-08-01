@@ -27,8 +27,8 @@
 <meta property="article:published_time" content="2020-04-29T17:37:28.000Z">
 <meta property="article:modified_time" content="2022-08-01T21:05:44.952Z">
 <meta property="article:author" content="Desmond">
-<meta property="article:tag" content="Raspberry Pi">
 <meta property="article:tag" content="Linux">
+<meta property="article:tag" content="Raspberry Pi">
 <meta property="article:tag" content="NAS">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://desmond121.github.io/img/how-to-build-a-NAS-with-raspberry-pi/title.jpg">
@@ -410,9 +410,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/Raspberry-Pi/">#Raspberry Pi</a>
-      
         <a href="/tags/Linux/">#Linux</a>
+      
+        <a href="/tags/Raspberry-Pi/">#Raspberry Pi</a>
       
         <a href="/tags/NAS/">#NAS</a>
       
@@ -493,21 +493,29 @@
             
   <article id="comments" lazyload>
     
-  <div id="gitalk-container"></div>
   <script type="text/javascript">
-    Fluid.utils.loadComments('#gitalk-container', function() {
-      Fluid.utils.createCssLink('/css/gitalk.css')
-      Fluid.utils.createScript('https://lib.baomitu.com/gitalk/1.7.2/gitalk.min.js', function() {
-        var options = Object.assign(
-          {"clientID":"9f978c378935be95b18f","clientSecret":"8d0641046c823d380b94300f5df0941a1f54480b","repo":"desmond121.github.io","owner":"Desmond121","admin":["Desmond121"],"language":"zh-CN","labels":["Gitalk"],"perPage":10,"pagerDirection":"last","distractionFreeMode":false,"createIssueManually":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token"},
-          {
-            id: '392f4c8185ef24285e5d4b44dd0df444'
-          }
-        )
-        var gitalk = new Gitalk(options);
-        gitalk.render('gitalk-container');
-      });
-    });
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'desmond121/desmond121.github.io');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', '✨utterances✨');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
   </script>
   <noscript>Please enable JavaScript to view the comments</noscript>
 
