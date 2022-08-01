@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://desmond121.github.io/img/cpp_default.jpg">
 <meta property="article:published_time" content="2020-05-08T21:45:30.000Z">
-<meta property="article:modified_time" content="2022-07-31T00:06:58.079Z">
+<meta property="article:modified_time" content="2022-08-01T21:07:55.731Z">
 <meta property="article:author" content="Desmond">
 <meta property="article:tag" content="C++">
 <meta name="twitter:card" content="summary_large_image">
@@ -386,7 +386,7 @@
               <p class="note note-info">
                 
                   
-                    本文最后更新于：2022年7月31日 凌晨
+                    本文最后更新于：2022年8月1日 晚上
                   
                 
               </p>
@@ -408,7 +408,7 @@
 <p>新建一个对象并将其初始化为同类现有对象时，复制构造函数都会被调用。如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function">StringBad <span class="hljs-title">ditto</span><span class="hljs-params">(motto)</span></span>;<br>StringBad metoo = motto;<br>StringBad also = <span class="hljs-built_in">stringBad</span>(motto);<br>StringBad* pStringBad = <span class="hljs-keyword">new</span> <span class="hljs-built_in">StringBad</span>(motto);<br></code></pre></td></tr></table></figure>
 <p>按值传递对象将调用复制构造函数，因此应该按引用传递对象，以减少使用的时间和空间。</p>
-<h3 id="默认复制构造函数带来的问题和解决"><a href="#默认复制构造函数带来的问题和解决" class="headerlink" title="默认复制构造函数带来的问题和解决"></a>默认复制构造函数带来的问题和解决</h3><p>默认复制构造函数会对非静态成员逐个进行<code>浅复制</code>，复制的是成员的地址，即两个对象的成员都是同一个地址的数据。如果在析构函数中有对内存的释放，则会导致同一内存空间被释放两次！<br><img src="/img/post5/post5-1.jpg" srcset="/img/loading.gif" lazyload><br>解决的方法则是定义一个显式的复制构造函数，并定义它进行深度复制（deep copy）。也就是，复制时先将数据复制到新的地址，而成员指向新的地址而不是同一地址。<br><img src="/img/post5/post5-2.jpg" srcset="/img/loading.gif" lazyload></p>
+<h3 id="默认复制构造函数带来的问题和解决"><a href="#默认复制构造函数带来的问题和解决" class="headerlink" title="默认复制构造函数带来的问题和解决"></a>默认复制构造函数带来的问题和解决</h3><p>默认复制构造函数会对非静态成员逐个进行<code>浅复制</code>，复制的是成员的地址，即两个对象的成员都是同一个地址的数据。如果在析构函数中有对内存的释放，则会导致同一内存空间被释放两次！<br><img src="/img/cpp-primer-plus-chapter-12/1.jpg" srcset="/img/loading.gif" lazyload><br>解决的方法则是定义一个显式的复制构造函数，并定义它进行深度复制（deep copy）。也就是，复制时先将数据复制到新的地址，而成员指向新的地址而不是同一地址。<br><img src="/img/cpp-primer-plus-chapter-12/2.jpg" srcset="/img/loading.gif" lazyload></p>
 <p><strong>总而言之，如果类中包含了 new 初始化的成员，应当定义一个使用深度复制的复制构造函数</strong></p>
 <h3 id="赋值运算符"><a href="#赋值运算符" class="headerlink" title="赋值运算符"></a>赋值运算符</h3><p>C++允许类对象赋值，通过自动为类重载赋值运算符实现的，它的原型如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c++">Class_name&amp; Class_name::<span class="hljs-keyword">operator</span>=(cosnt Class_name&amp;);<br></code></pre></td></tr></table></figure>

@@ -16,27 +16,26 @@
   <meta name="author" content="Desmond">
   <meta name="keywords" content="">
   
-    <meta name="description" content="线程干扰、内存一致性和关键字 synchronized、volatile。">
+    <meta name="description" content="ThreadLocal 类。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java 并发编程笔记（一）">
-<meta property="og:url" content="https://desmond121.github.io/2022/07/29/java-concurrent-1/">
+<meta property="og:title" content="Java 并发编程笔记（四）">
+<meta property="og:url" content="https://desmond121.github.io/2022/07/31/java-concurrent-4/">
 <meta property="og:site_name" content="Desmond&#39;s Blog">
-<meta property="og:description" content="线程干扰、内存一致性和关键字 synchronized、volatile。">
+<meta property="og:description" content="ThreadLocal 类。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://desmond121.github.io/img/java_default.jpg">
-<meta property="article:published_time" content="2022-07-29T15:19:20.000Z">
-<meta property="article:modified_time" content="2022-07-31T21:57:11.502Z">
+<meta property="article:published_time" content="2022-07-31T20:31:15.000Z">
+<meta property="article:modified_time" content="2022-08-01T22:35:53.349Z">
 <meta property="article:author" content="Desmond">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="多线程">
-<meta property="article:tag" content="synchronized">
-<meta property="article:tag" content="volatile">
+<meta property="article:tag" content="ThreadLocal">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://desmond121.github.io/img/java_default.jpg">
   
   
   
-  <title>Java 并发编程笔记（一） - Desmond&#39;s Blog</title>
+  <title>Java 并发编程笔记（四） - Desmond&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -201,7 +200,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Java 并发编程笔记（一）"></span>
+            <span id="subtitle" data-typed-text="Java 并发编程笔记（四）"></span>
           
         </div>
 
@@ -217,8 +216,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-07-29 16:19" pubdate>
-          2022年7月29日 下午
+        <time datetime="2022-07-31 21:31" pubdate>
+          2022年7月31日 晚上
         </time>
       </span>
     
@@ -229,7 +228,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.8k 字
+          3.2k 字
         
       </span>
     
@@ -240,7 +239,7 @@
         
         
         
-          15 分钟
+          27 分钟
         
       </span>
     
@@ -306,7 +305,7 @@
       
         <a href="/2022/07/29/java-concurrent-1/" title="Java 并发编程笔记（一）"
            class="list-group-item list-group-item-action
-           active">
+           ">
           <span class="category-post">Java 并发编程笔记（一）</span>
         </a>
       
@@ -333,7 +332,7 @@
       
         <a href="/2022/07/31/java-concurrent-4/" title="Java 并发编程笔记（四）"
            class="list-group-item list-group-item-action
-           ">
+           active">
           <span class="category-post">Java 并发编程笔记（四）</span>
         </a>
       
@@ -357,12 +356,12 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Java 并发编程笔记（一）</h1>
+            <h1 style="display: none">Java 并发编程笔记（四）</h1>
             
               <p class="note note-info">
                 
                   
-                    本文最后更新于：2022年7月31日 晚上
+                    本文最后更新于：2022年8月1日 晚上
                   
                 
               </p>
@@ -370,50 +369,35 @@
             
               <div class="markdown-body">
                 
-                <p>并发编程可能会出现两种问题，一个是线程干扰（Thread Interference），一个是内存一致性错误（Memory Consistency Error）。</p>
-<h2 id="线程干扰"><a href="#线程干扰" class="headerlink" title="线程干扰"></a>线程干扰</h2><p>线程干扰就是两个线程同时读写一个数据，有的操作会被覆盖。如下，A 的操作会被覆盖：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Text">Thread A: Retrieve c.<br>Thread B: Retrieve c.<br>Thread A: Increment retrieved value; result is 1.<br>Thread B: Decrement retrieved value; result is -1.<br>Thread A: Store result in c; c is now 1.<br>Thread B: Store result in c; c is now -1.<br></code></pre></td></tr></table></figure>
-
-<p>有一种操作不需要考虑线程干扰问题，那就是<strong>原子性</strong>操作。有以下：</p>
-<ul>
-<li>对引用变量和除了 long 和 double 的原始类型变量的读或者写。</li>
-<li>对所有使用了 volatile 关键字的变量的读或写。</li>
-</ul>
-<p><em>*注意都是读或写，其他操作如<code>i++</code>是非原子性的。</em></p>
-<p>使用原子性的变量会比使用 synchronized 关键字性能更好。<code>java.util.concurrent</code>包提供了多原子性类。</p>
-<h2 id="内存一致性"><a href="#内存一致性" class="headerlink" title="内存一致性"></a>内存一致性</h2><p>主要来源于可见性（Visibility）问题和重排序（Re-ordering）问题。</p>
-<p>可见性指当多个线程访问同一个变量时，一个线程修改了这个变量的值，其他线程能够立即看得到修改的值。(Java 内存模型中，每个线程都有自己的工作内存，这些内存中的值来自一个主内存。多线程时，工作内存被写入，并不一定会马上写入到主内存中，这样其他的线程可能看不到该变动）。</p>
-<p>在 Java 内存模型中，为了效率是允许编译器和处理器对指令进行重排序，当然重排序不会影响单线程的运行结果，但是对多线程会有影响。</p>
-<p>volatile 关键字可以解决上述两个内存一致性问题。</p>
-<h2 id="关键字-synchronized-和-volatile"><a href="#关键字-synchronized-和-volatile" class="headerlink" title="关键字 synchronized 和 volatile"></a>关键字 synchronized 和 volatile</h2><p>synchronized 通常称为重量级锁，而 volatile 更轻量级，不会引起线程上下文切换和调度。</p>
-<h3 id="synchronized"><a href="#synchronized" class="headerlink" title="synchronized"></a>synchronized</h3><p>synchronized 可以同时解决线程干扰和内存一致性的问题，但是有一定的开销。</p>
-<p>同步方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">add</span><span class="hljs-params">(<span class="hljs-type">int</span> value)</span>&#123;<br>    count += value;<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>同步块：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">add</span><span class="hljs-params">(<span class="hljs-type">int</span> value)</span>&#123;<br>    <span class="hljs-comment">// 如果是同步方法，必须显式的提供该锁的类。</span><br>    <span class="hljs-keyword">synchronized</span>(<span class="hljs-built_in">this</span>)&#123;<br>        count += value;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>同时只能有一个线程执行同步块或同步方法。相当于是其他的线程要阻塞并等待正在调用同步方法的线程结束调用。</p>
-<p>synchronized 是基于每个对象的内在锁实现的。每个线程要访问一个对象的 synchronized 方法的时候，都会先获取它的内在锁，完成后再释放它。其他想要访问这个对象的 synchronized 方法的线程都会阻塞，因为一个锁只能被一个线程拥有。如果一个线程已经拥有某个对象的锁，那它可以多次拥有该锁，同时它也会多次释放该锁。对于 Static 的 synchronized 方法，则会获得该 Class 对象的锁。</p>
-<h4 id="volatile"><a href="#volatile" class="headerlink" title="volatile"></a>volatile</h4><h5 id="作用：保证内存一致性"><a href="#作用：保证内存一致性" class="headerlink" title="作用：保证内存一致性"></a>作用：保证内存一致性</h5><p>volatile 关键字用于解决并发编程中的内存一致性问题。</p>
-<p>关于可见性。如果变量使用了 volatile 关键字：</p>
-<ul>
-<li>在写入的时候会将变量强制刷新到主内存去。</li>
-<li>在读的时候，会从主内存中读。</li>
-</ul>
-<p>这样别的线程就可以看到该变量的更新，解决了可见性问题。</p>
-<p>关于重排序。volatile 关键字保证了在运行到读写该变量的操作时：</p>
-<ul>
-<li>该操作之前的所有操作均完成。</li>
-<li>该操作之后的操作均未进行。</li>
-</ul>
-<p>这样就保证了程序运行的有序性。</p>
-<h5 id="局限：不能解决线程干扰"><a href="#局限：不能解决线程干扰" class="headerlink" title="局限：不能解决线程干扰"></a>局限：不能解决线程干扰</h5><p>volatile 不能解决线程干扰。如过对 volatile 变量使用了非原子性操作，不能保证不被其他线程干扰。比如，<code>i++</code>。这一操作需要：</p>
+                <h2 id="ThreadLocal-的意义"><a href="#ThreadLocal-的意义" class="headerlink" title="ThreadLocal 的意义"></a>ThreadLocal 的意义</h2><p>如果有一个变量在类中很多方法都需要调用，但他又不线程安全，可能出现以下情况：</p>
 <ol>
-<li>将 i 的值从内存中取回</li>
-<li>计算 i++</li>
-<li>将结果放回内存。</li>
+<li><p>定义为类的成员变量。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomethingToRun</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Runnable</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> theVariable；<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>        theVariable = getVariable();<br>        methodA();<br>        methodB();<br>        <span class="hljs-comment">//...</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>如果多个线程来跑这个任务，并且每个线程都共用了同一个<code>Runable</code>，它们就会共用了同一个线程不安全的变量。如果要避免这种情况，每个线程就都要单独实例化一个<code>Runable</code>对象，内存开销会比较大。</p>
+</li>
+<li><p>如果定义为方法内的局部变量。</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomethingToRun</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Runnable</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">theVariable</span> <span class="hljs-operator">=</span> getVariable();<br>        methodA(theVariable);<br>        methodB(theVariable)<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">methodA</span><span class="hljs-params">(<span class="hljs-type">int</span> theVariable)</span>&#123;...&#125;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">methodB</span><span class="hljs-params">(<span class="hljs-type">int</span> theVariable)</span>&#123;...&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这样不会出现线程干扰，但是每个方法都需要传递这个参数。</p>
+</li>
+<li><p>使用 ThreadLocal 类。</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomethingToRun</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Runnable</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ThreadLocal&lt;Integer&gt; theVariable = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ThreadLocal</span>&lt;&gt;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">// ...</span><br>        theVariable.set(getVariable());<br>        methodA();<br>        methodB();<br>    &#125;<br><br>    methodA()&#123;<br>       <span class="hljs-type">var</span> <span class="hljs-variable">value</span> <span class="hljs-operator">=</span> theVariable.get();<br>       <span class="hljs-comment">// do something...</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p> 这样每个线程中都有一份自己的本地变量，不会被其他线程干扰，且对于同个线程里的每个方法来说，它们就像本地变量一样。</p>
+</li>
 </ol>
-<p>因为使用了 volatile 关键字，确保了 1 和 3 过程中都从主存中存取。但是，其他的线程在 1、3 过程中也可能进行了存取，这样就导致了有一个线程的结果会被忽略。</p>
-<p>因此，volatile 变量主要用在多线程情况下的原子操作中，可以用作某个状态的标识，在这种情况下性能会比原子类或者 synchronized 关键字有更好的性能。</p>
+<h2 id="ThreadLocal-原理分析"><a href="#ThreadLocal-原理分析" class="headerlink" title="ThreadLocal 原理分析"></a>ThreadLocal 原理分析</h2><p>以下是 ThreadLocal 的部分源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ThreadLocal</span>&lt;T&gt; &#123;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">threadLocalHashCode</span> <span class="hljs-operator">=</span> nextHashCode();<br><br>    <span class="hljs-keyword">public</span> T <span class="hljs-title function_">get</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">Thread</span> <span class="hljs-variable">t</span> <span class="hljs-operator">=</span> Thread.currentThread();<br>        <span class="hljs-type">ThreadLocalMap</span> <span class="hljs-variable">map</span> <span class="hljs-operator">=</span> getMap(t);<br>        <span class="hljs-keyword">if</span> (map != <span class="hljs-literal">null</span>) &#123;<br>            ThreadLocalMap.<span class="hljs-type">Entry</span> <span class="hljs-variable">e</span> <span class="hljs-operator">=</span> map.getEntry(<span class="hljs-built_in">this</span>);<br>            <span class="hljs-keyword">if</span> (e != <span class="hljs-literal">null</span>) &#123;<br>                <span class="hljs-meta">@SuppressWarnings(&quot;unchecked&quot;)</span><br>                <span class="hljs-type">T</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> (T)e.value;<br>                <span class="hljs-keyword">return</span> result;<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> setInitialValue();<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">set</span><span class="hljs-params">(T value)</span> &#123;<br>        <span class="hljs-type">Thread</span> <span class="hljs-variable">t</span> <span class="hljs-operator">=</span> Thread.currentThread();<br>        <span class="hljs-type">ThreadLocalMap</span> <span class="hljs-variable">map</span> <span class="hljs-operator">=</span> getMap(t);<br>        <span class="hljs-keyword">if</span> (map != <span class="hljs-literal">null</span>) &#123;<br>            map.set(<span class="hljs-built_in">this</span>, value);<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            createMap(t, value);<br>        &#125;<br>    &#125;<br><br>     <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">remove</span><span class="hljs-params">()</span> &#123;<br>         <span class="hljs-type">ThreadLocalMap</span> <span class="hljs-variable">m</span> <span class="hljs-operator">=</span> getMap(Thread.currentThread());<br>         <span class="hljs-keyword">if</span> (m != <span class="hljs-literal">null</span>) &#123;<br>             m.remove(<span class="hljs-built_in">this</span>);<br>         &#125;<br>     &#125;<br><br>    ThreadLocalMap <span class="hljs-title function_">getMap</span><span class="hljs-params">(Thread t)</span> &#123;<br>        <span class="hljs-keyword">return</span> t.threadLocals;<br>    &#125;<br><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">createMap</span><span class="hljs-params">(Thread t, T firstValue)</span> &#123;<br>        t.threadLocals = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ThreadLocalMap</span>(<span class="hljs-built_in">this</span>, firstValue);<br>    &#125;<br><br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ThreadLocalMap</span> &#123;<br><br>        <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Entry</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">WeakReference</span>&lt;ThreadLocal&lt;?&gt;&gt; &#123;<br>            <span class="hljs-comment">/** The value associated with this ThreadLocal. */</span><br>            Object value;<br><br>            Entry(ThreadLocal&lt;?&gt; k, Object v) &#123;<br>                <span class="hljs-built_in">super</span>(k);<br>                value = v;<br>            &#125;<br>        &#125;<br><br>        <span class="hljs-keyword">private</span> Entry[] table;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>可以在<code>getMap(...)</code>方法中看到，虽然<code>ThreadLocalMap</code>是<code>ThreadLocal</code>的内部类，但是它的实例其实是被<code>Thread</code>类引用的。另外可以看到在<code>ThreadLocalMap</code>内部有一个<code>Entry</code>数组，每个<code>Entry</code>由键值对组成，其中键是弱引用。根据这些内容画出<code>ThreadLocal</code>在内存中的结构示意图如下：</p>
+<p><img src="/img/java-concurrent-4/ThreadLocals.drawio.svg" srcset="/img/loading.gif" lazyload></p>
+<p>可以看到，每一个<code>ThreadLocal</code>变量都有两个引用：</p>
+<ol>
+<li>作为某个对象中的变量的引用，是强应用。</li>
+<li>作为<code>Entry</code>的键的引用，是弱引用（一个对象如果只有弱引用，就会被 GC 回收）。</li>
+</ol>
+<p>这一特点可能会带来内存泄漏的问题。如果在某个线程中，一个<code>ThreadLocal</code>不再被强引用，那他就会被 GC 回收，此时它对应的<code>Entry</code>的 key 将会为 null，此后 value 不再有可能被访问。然而，value 是强引用，由上图可以看出它的引用可以追溯到<code>Thread</code>, 也就是它的声明周期和线程一样长。存在 key 为 null，但 value 却有值的无效 Entry，导致内存泄漏。</p>
+<p>实际上 <code>ThreadLocal</code> 内部也针对这一情况做了一定的防护。它有<code>expungeStaleEntry(..)</code>方法，可以检测出 key 为 null 的<code>Entry</code>并清除。但是这个方法只有在调用<code>get()</code>，<code>set(..)</code>和<code>remove()</code>方法时才会会被调用。</p>
+<p>此外，这里的弱引用的使用也是有原因的。因为如果使用了强引用，当<code>ThreadLocal</code>对象不再使用时，这个强引用可以一直追溯到<code>Thread</code>中。这样一来它的生命周期也和线程一样。如果线程是长期存在的，这个变量就会一直在内存中无法回收。从这个角度来看，弱引用其实很好的解决了这个问题，只是使用时需要注意。</p>
+<h3 id="在线程池中使用-ThreadLocal"><a href="#在线程池中使用-ThreadLocal" class="headerlink" title="在线程池中使用 ThreadLocal"></a>在线程池中使用 ThreadLocal</h3><p>线程池里对线程的管理都是线程复用的方法，所以在线程池里线程非常难结束，更有可能的是永远不会结束。这就意味着线程的持续时间是不可估测的，甚至会与 JVM 的生命周期一致。因此，每个任务中使用完的 <code>ThreadLocal</code> 如果没有手动清除，他就会继续保存在当前线程中，甚至会被下一个分配到该线程的任务访问到，造成不可预见的影响。</p>
+<p>结合之前提到的潜在的内存泄漏问题，总而言之，在使用完 <code>ThreadLocal</code>后应当调用<code>remove()</code>方法将其回收。</p>
 
                 
               </div>
@@ -451,9 +435,7 @@
       
         <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">#多线程</a>
       
-        <a href="/tags/synchronized/">#synchronized</a>
-      
-        <a href="/tags/volatile/">#volatile</a>
+        <a href="/tags/ThreadLocal/">#ThreadLocal</a>
       
     </div>
   
@@ -465,8 +447,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Java 并发编程笔记（一）</div>
-      <div>https://desmond121.github.io/2022/07/29/java-concurrent-1/</div>
+      <div>Java 并发编程笔记（四）</div>
+      <div>https://desmond121.github.io/2022/07/31/java-concurrent-4/</div>
     </div>
     <div class="license-meta">
       
@@ -478,7 +460,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年7月29日</div>
+          <div>2022年7月31日</div>
         </div>
       
       
@@ -508,18 +490,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/07/30/java-concurrent-2/" title="Java 并发编程笔记（二）">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Java 并发编程笔记（二）</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2020/10/05/csapp-attack-lab/" title="CS:APP Attacklab 心得">
-                        <span class="hidden-mobile">CS:APP Attacklab 心得</span>
+                      <a href="/2022/07/31/java-concurrent-3/" title="Java 并发编程笔记（三）">
+                        <span class="hidden-mobile">Java 并发编程笔记（三）</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -540,7 +516,7 @@
         var options = Object.assign(
           {"clientID":"9f978c378935be95b18f","clientSecret":"8d0641046c823d380b94300f5df0941a1f54480b","repo":"desmond121.github.io","owner":"Desmond121","admin":["Desmond121"],"language":"zh-CN","labels":["Gitalk"],"perPage":10,"pagerDirection":"last","distractionFreeMode":false,"createIssueManually":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token"},
           {
-            id: 'b9aca776f5668a888a8ddc43cbaa1241'
+            id: '56fe96f8c22cd52905425cd043e1e255'
           }
         )
         var gitalk = new Gitalk(options);
