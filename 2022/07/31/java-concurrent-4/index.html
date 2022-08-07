@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://desmond121.github.io/img/java_default.jpg">
 <meta property="article:published_time" content="2022-07-31T20:31:15.000Z">
-<meta property="article:modified_time" content="2022-08-01T22:35:53.349Z">
+<meta property="article:modified_time" content="2022-08-03T15:08:39.781Z">
 <meta property="article:author" content="Desmond">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="多线程">
@@ -361,7 +361,7 @@
               <p class="note note-info">
                 
                   
-                    本文最后更新于：2022年8月1日 晚上
+                    本文最后更新于：2022年8月3日 下午
                   
                 
               </p>
@@ -369,7 +369,7 @@
             
               <div class="markdown-body">
                 
-                <h2 id="ThreadLocal-的意义"><a href="#ThreadLocal-的意义" class="headerlink" title="ThreadLocal 的意义"></a>ThreadLocal 的意义</h2><p>如果有一个变量在类中很多方法都需要调用，但他又不线程安全，可能出现以下情况：</p>
+                <h2 id="ThreadLocal-的意义"><a href="#ThreadLocal-的意义" class="headerlink" title="ThreadLocal 的意义"></a>ThreadLocal 的意义</h2><p>如果有一个变量在类中很多方法都需要调用，但它又不是线程安全的，可能出现以下情况：</p>
 <ol>
 <li><p>定义为类的成员变量。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SomethingToRun</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Runnable</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> theVariable；<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>        theVariable = getVariable();<br>        methodA();<br>        methodB();<br>        <span class="hljs-comment">//...</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
@@ -390,7 +390,7 @@
 <p><img src="/img/java-concurrent-4/ThreadLocals.drawio.svg" srcset="/img/loading.gif" lazyload></p>
 <p>可以看到，每一个<code>ThreadLocal</code>变量都有两个引用：</p>
 <ol>
-<li>作为某个对象中的变量的引用，是强应用。</li>
+<li>作为某个对象中的变量的引用，是强引用。</li>
 <li>作为<code>Entry</code>的键的引用，是弱引用（一个对象如果只有弱引用，就会被 GC 回收）。</li>
 </ol>
 <p>这一特点可能会带来内存泄漏的问题。如果在某个线程中，一个<code>ThreadLocal</code>不再被强引用，那他就会被 GC 回收，此时它对应的<code>Entry</code>的 key 将会为 null，此后 value 不再有可能被访问。然而，value 是强引用，由上图可以看出它的引用可以追溯到<code>Thread</code>, 也就是它的声明周期和线程一样长。存在 key 为 null，但 value 却有值的无效 Entry，导致内存泄漏。</p>
@@ -489,6 +489,12 @@
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2022/08/03/algorithm-review-1/" title="数据结构与算法复习（一）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">数据结构与算法复习（一）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
